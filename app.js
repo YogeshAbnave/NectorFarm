@@ -43,11 +43,11 @@ app.use(cookieParser()); // read cookies (needed for auth)
 // routes ======================================================================
 app.use('/api', require('./app/routes/routes.js')); // load our routes and pass in our app and fully configured passport
 
-app.use(express.static(path.join(__dirname, '/angularApp/dist')));
+// app.use(express.static(path.join(__dirname, '/angularApp/dist')));
 app.use(express.static(path.join(__dirname, '/public')));
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'angularApp/dist/index.html'));
-});
+// app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, 'angularApp/dist/index.html'));
+// });
 
 // launch ======================================================================
 const http = require('http');
