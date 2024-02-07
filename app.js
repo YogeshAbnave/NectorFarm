@@ -1,11 +1,8 @@
 const express = require('express');
 const app = express();
-
 const cors = require('cors');
-
 const mongoose = require('mongoose');
 const path = require('path');
-
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const routes = require('express').Router();
@@ -37,8 +34,8 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useFindAndModif
 mongoose.set('runValidators', true);
 
 //set up our express application
-app.use(morgan('dev')); // log every request to the console
-app.use(cookieParser()); // read cookies (needed for auth)
+app.use(morgan('dev'));
+app.use(cookieParser());
 
 // routes ======================================================================
 app.use('/api', require('./app/routes/routes.js')); // load our routes and pass in our app and fully configured passport
