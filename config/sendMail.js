@@ -15,7 +15,7 @@ exports.sendMail = function(params, callback) {
     };
 
     var smtpTransports = nodemailer.createTransport(smtpTransport({
-        host: smtp.gmail.com,
+        host: "smtp.gmail.com",
         port: 587,
         secure: false, // true for 465, false for other ports
         auth: {
