@@ -7,18 +7,6 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const routes = require('express').Router();
 
-// require("dotenv").config({ path: "config/dev.env" });
-
-// if (process.env.NODE_ENV == 'development') {
-//     require("dotenv").config({ path: "config/dev.env" });
-// } else if (process.env.NODE_ENV == 'staging') {
-//     require("dotenv").config({ path: "config/qa.env" });
-// } else if (process.env.NODE_ENV == 'production') {
-//     require("dotenv").config({ path: "config/prod.env" });
-// } else {
-//     require("dotenv").config({ path: "config/local.env" });
-// }
-
 const port = 8000
 app.set('views', path.join(__dirname, 'app/views'));
 app.set('view engine', 'ejs');
