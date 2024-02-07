@@ -11,35 +11,53 @@ var forgotToken = require('../models/forgotToken.model');
 
 
 exports.login = function (req, res) {
-	AdminUserData.findOne({ email: req.body.email }, function (err, userData) {
-		if (!userData) {
-			res.status(400).send({ success: false, status: 400, message: "Incorrect email address" });
-		} else if (!bcrypt.compareSync(req.body.password, userData.password)) {
-			res.status(400).send({ success: false, status: 400, message: "Incorrect password" });
-		} else if (!userData.active) {
-			res.status(400).send({ success: false, status: 400, message: "Seems, your account is inactivated." });
-		} else if(userData.role !== "Admin") {
-			res.status(400).send({ success: false, status: 400, message: "User not allowed" });
-		} else {
-			let token = jwt.sign({ username: userData.username }, 'RESTFULAPIs');
-			AdminUserData.updateOne({ "_id": userData._id }, { $set: { "sessionToken": token } })
-			.then(() => {
-				var data = {
-					"success": true,
-					"status": 200,
-					"token": token,
-					"userId": userData._id,
-					"email": userData.email,
-					"name": userData.firstName + " " + userData.lastName,
-					"profilePic": userData.profilePic
-				}
-				return res.status(200).send(data);
-			}).catch(err => {
-				res.status(500).json({ success: false, status: 500, message: err.message })
-			});
-		}
-	});
-}
+    console.log("req.body.email", req.body);
+    AdminUserData.findOne({ email: req.body.email }, function (err, userData) {
+        console.log("err1", err);
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ success: false, status: 500, message: "Database error" });
+        }
+        if (!userData) {
+            return res.status(400).json({ success: false, status: 400, message: "Incorrect email address" });
+        }
+        bcrypt.compare(req.body.password, userData.password, function (bcryptErr, result) {
+            if (bcryptErr) {
+                console.error('Bcrypt error:', bcryptErr);
+                return res.status(500).json({ success: false, status: 500, message: "Error during password comparison" });
+            }
+            if (!result) {
+                return res.status(400).json({ success: false, status: 400, message: "Incorrect password" });
+            }
+            if (!userData.active) {
+                return res.status(400).json({ success: false, status: 400, message: "Seems, your account is inactivated." });
+            }
+            if (userData.role !== "Admin") {
+                return res.status(400).json({ success: false, status: 400, message: "User not allowed" });
+            }
+            let token = jwt.sign({ username: userData.username }, 'RESTFULAPIs');
+            AdminUserData.updateOne({ "_id": userData._id }, { $set: { "sessionToken": token } })
+                .then(() => {
+				
+                    var data = {
+                        "success": true,
+                        "status": 200,
+                        "token": userData.sessionToken,
+                        "userId": userData._id,
+                        "email": userData.email,
+						"name": userData.firstName + " " + userData.lastName,
+                        "profilePic": userData.profilePic
+                    }
+					console.log("data",data)
+
+                    return res.status(200).json(data);
+                }).catch(updateErr => {
+                    console.error('Update error:', updateErr);
+                    res.status(500).json({ success: false, status: 500, message: "Error updating session token" });
+                });
+        });
+    });
+};
 
 exports.logout = function (req, res) {
 	res.status(200).send({ success: true, status: 200, message: "Admin User Logout" });
