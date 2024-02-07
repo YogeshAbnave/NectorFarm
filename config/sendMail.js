@@ -15,7 +15,7 @@ exports.sendMail = function(params, callback) {
     };
 
     var smtpTransports = nodemailer.createTransport(smtpTransport({
-        host: process.env.SMTP_HOST,
+        host: smtp.gmail.com,
         port: 587,
         secure: false, // true for 465, false for other ports
         auth: {
@@ -31,7 +31,7 @@ exports.sendMail = function(params, callback) {
             var template = handlebars.compile(html);
             var replacements = {
                 username: params.username,
-                resetlink: process.env.FORGOT_EMAIL_URL + "/resetPassword/" + params.token + "?platform=" + params.platform,
+                resetlink: "https://admin.NectorFarmapp.com" + "/resetPassword/" + params.token + "?platform=" + params.platform,
                 title: "Reset Password Email",
                 message: "A request has been submitted to reset password linked to you account on NectorFarm system. Please click on below link to genertae new password. Ignore if it is not requested by you.",
                 set: "Reset"
@@ -63,7 +63,7 @@ exports.sendMail = function(params, callback) {
             return callback({ success: false, status: 500, message: "Error while sending Email" });
         }
         var mailOptions = {
-            from: `${process.env.FROM_NAME}<${process.env.FROM_EMAIL}>`,
+            from: "Nector Farm",
             to : params.email,
             subject: title,
             html: htmlToSend

@@ -7,18 +7,19 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const routes = require('express').Router();
 
+// require("dotenv").config({ path: "config/dev.env" });
 
-if (process.env.NODE_ENV == 'development' || process.env.NODE_ENV == undefined) {
-    require("dotenv").config({ path: "config/dev.env" });
-} else if (process.env.NODE_ENV == 'staging') {
-    require("dotenv").config({ path: "config/qa.env" });
-} else if (process.env.NODE_ENV == 'production') {
-    require("dotenv").config({ path: "config/prod.env" });
-} else {
-    require("dotenv").config({ path: "config/local.env" });
-}
+// if (process.env.NODE_ENV == 'development') {
+//     require("dotenv").config({ path: "config/dev.env" });
+// } else if (process.env.NODE_ENV == 'staging') {
+//     require("dotenv").config({ path: "config/qa.env" });
+// } else if (process.env.NODE_ENV == 'production') {
+//     require("dotenv").config({ path: "config/prod.env" });
+// } else {
+//     require("dotenv").config({ path: "config/local.env" });
+// }
 
-const port = process.env.PORT || 3000
+const port = 8000
 app.set('views', path.join(__dirname, 'app/views'));
 app.set('view engine', 'ejs');
 app.use(cors());
@@ -27,10 +28,16 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use('/public', express.static('public'));
 
 /***************Mongodb configuratrion********************/
-mongoose.connect('mongodb+srv://JLPT-EXAM:Fl4xkzwe7FhJ5fMY@cluster0.bi0xw4z.mongodb.net/JLPT-EXAM', { useNewUrlParser: true, useFindAndModify: false, useUnifiedTopology: true, useCreateIndex: true }).then(result => {
-    console.log("DB is connected.", process.env.MONGO_URI);
+mongoose.connect('mongodb+srv://JLPT-EXAM:Fl4xkzwe7FhJ5fMY@cluster0.bi0xw4z.mongodb.net/JLPT-EXAM', { 
+    useNewUrlParser: true, 
+    useFindAndModify: false, 
+    useUnifiedTopology: true, 
+    useCreateIndex: true 
+}).then(() => {
+    console.log('MongoDB connected successfully');
+}).catch((error) => {
+    console.error('MongoDB connection error:', error);
 });
-
 mongoose.set('runValidators', true);
 
 //set up our express application
@@ -56,5 +63,4 @@ app.locals.options = {};
 // Cron jobs
 
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = 1;
 exports = module.exports = app, routes;
