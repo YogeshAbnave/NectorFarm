@@ -34,7 +34,16 @@ app.use(cookieParser());
 
 // routes ======================================================================
 app.use('/api', require('./app/routes/routes.js')); // load our routes and pass in our app and fully configured passport
-
+const users = [
+    { id: 1, name: 'John' },
+    { id: 2, name: 'Jane' },
+    { id: 3, name: 'Doe' }
+  ];
+  
+  // GET endpoint to fetch all users
+  app.get('/api/data', (req, res) => {
+    res.json(users);
+  });
 // app.use(express.static(path.join(__dirname, '/angularApp/dist')));
 app.use(express.static(path.join(__dirname, '/public')));
 // app.get('*', (req, res) => {
