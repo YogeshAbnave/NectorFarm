@@ -166,10 +166,9 @@ exports.resendCode = function(req, res) {
 }
 
 exports.verify = function(req, res) {
-    console.log("result", req.body.code,req.body.userId )
 
     verifyCode.findOne({ "code": req.body.code, "user": req.body.userId }, function(err, result) {
-        console.log("result", result)
+   
         if (err) {
             res.status(500).send({ success: false, status: 500, message: err.message });
         } else if (result == null) {
@@ -269,33 +268,35 @@ exports.logout = function(req, res) {
 
 //Delete user
 exports.deletedUser = async (req, res) => {
+    try {
+        const { userId } = req.body;
+        const user = await UserData.findOne({ "_id": userId });
 
-    const { userId } = req.body;
-
-        const user = await UserData.findOne({ "_id": req.body.userId });
         if (user) {
-                UserData.updateOne({"_id": userId},{
-                    $set:{
+            await UserData.updateOne(
+                { "_id": userId },
+                {
+                    $set: {
                         status: "Deleted",
                         email: `${user._id}_${user.email}`,
-                        username: `${user._id}_${user.name}`,
+                        username: `${user._id}_${user.username}`,
                         active: false,
                         deleted: true,
                         deleted_at: new Date(),
                         updated_at: new Date()
                     }
                 },
-                { runValidators: true, context: 'query' })
-                    .then().catch(err => {
-                        console.log("error", err);
-                        res.status(500).json({ success: false, status: 500, message: err.message })
-                    });
+                { runValidators: true, context: 'query' }
+            );
+            res.status(200).json({ success: true, message: 'User deleted successfully' });
+        } else {
+            res.status(404).json({ success: false, message: 'User not found' });
         }
-        else {
-            // console.log("user detailss", response)
-            res.status(404).send({ success: false, status: 404, message: 'User not found' });
-        }  
-}
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
 
 exports.getById = async(req, res) => {
     let userId = req.params.userId;
@@ -389,36 +390,18 @@ const project = {
         'loss': 1,
         'active': 1,
         'createdAt': 1,
-        'categories': {
-            '_id': 1,
-            'name': 1,
-            'image': 1
-        },
-        'followings': {
-            '_id': 1,
-            'firstName': 1,
-            'lastName': 1,
-            'email': 1,
-            'profilePic': 1,
-            'contactNo': 1,
-            'city': 1,
-            'state': 1,
-            'about': 1,
-            'dateOfBirth': 1
-        },
-        'subscriptions': 1,
         "isVerified": 1
     },
 }
 
 exports.getAll = async (req, res) => {
-    let { search_query, start, end, platform, userId } = req.query;
+   
+    let { search_query, start, end, platform, userId } = req.body;
     let page = parseInt(req.query.page, 10) || 1;
     let limit = parseInt(req.query.limit, 10) || 100;
     let searchQuery = search_query ? search_query.replace(/^\s+/g, '') : "";
-
     let query;
-    if (platform && platform == "admin") query = {"active": true};
+    if (platform && platform == "admin") query = {};
     else {
         // Blocked Users
         let user = await UserData.findOne({ "_id": userId });
@@ -443,26 +426,24 @@ exports.getAll = async (req, res) => {
         $match: {
             $or: [
                 {
-					'fullName': {
-						$regex: searchQuery,
-						$options: 'gi'
-					}
-				},
+                    'fullName': {
+                        $regex: new RegExp(searchQuery, 'gi')
+                    }
+                },
                 {
                     'username': {
-                        $regex: searchQuery,
-                        $options: 'gi'
+                        $regex: new RegExp(searchQuery, 'gi')
                     }
                 },
                 {
                     'email': {
-                        $regex: searchQuery,
-                        $options: 'gi'
+                        $regex: new RegExp(searchQuery, 'gi')
                     }
                 },
             ]
         }
-    }
+    };
+    
 
     UserData.aggregate([
         {
@@ -477,8 +458,8 @@ exports.getAll = async (req, res) => {
             }
         },
         searchMatch,
-        categoryLookup,
-        followingLookup,
+        // categoryLookup,
+        // followingLookup,
         project,
         {
             '$facet': {
@@ -491,16 +472,6 @@ exports.getAll = async (req, res) => {
             let user = await UserData.findOne({ "_id": userId });
            
             result[0].data.map(item => {
-
-                // If current user follows
-                let exists = user.followings.find(element => element.following.toString() == item._id.toString());
-                if (exists) item['isFollowed'] = true;
-                else item['isFollowed'] = false;
-
-                // Check current user's friend status
-                item.friendRequest = 'Not Sent';
-                
-
                 return item;
             });
         }
@@ -664,7 +635,6 @@ exports.forgotPassword = function(req, res) {
                         platform: 'mobile'
                     }
                     mailSend.sendMail(params, function(response) {
-                        console.log("Resouibse os", response);
                         if (response.success) {
                             res.status(200).send({ success: true, status: 200, message: response.message });
                         } else {

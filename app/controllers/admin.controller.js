@@ -13,7 +13,7 @@ var forgotToken = require('../models/forgotToken.model');
 exports.login = function (req, res) {
     console.log("req.body.email", req.body);
     AdminUserData.findOne({ email: req.body.email }, function (err, userData) {
-        console.log("err1", err);
+        console.log("userData", err, userData);
         if (err) {
             console.error('Database error:', err);
             return res.status(500).json({ success: false, status: 500, message: "Database error" });
@@ -32,7 +32,7 @@ exports.login = function (req, res) {
             if (!userData.active) {
                 return res.status(400).json({ success: false, status: 400, message: "Seems, your account is inactivated." });
             }
-            if (userData.role !== "Admin") {
+            if (userData.role !== "admin") {
                 return res.status(400).json({ success: false, status: 400, message: "User not allowed" });
             }
             let token = jwt.sign({ username: userData.username }, 'RESTFULAPIs');

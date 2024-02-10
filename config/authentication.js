@@ -3,18 +3,8 @@ var UserData = require('../app/models/user.model');
 var AdminData = require('../app/models/admin.model');
 
 exports.apiAuthentication = function (req, res, next) {
-    var token = req.headers.token;
-    // jwt.verify(token, 'RESTFULAPIs', { expiresIn: "120" }, (err, decoded) => {
-    //     if (decoded) {
-    //         return next();
-    //     }
-    //     return res.status(401).json({ success: false, status: 401, message: err.message })
-    // })
-    // let token_exists = await UserData.findOne({ "sessionToken": token });
-    // if (decoded) {
-    //     return next();
-    // }
-    // return res.status(401).json({ success: false, status: 401, message: err.message });
+    console.log(req.headers.authorization,"req.headers.authorization")
+    var token = req.headers.authorization;
     if (token) {
         AdminData.findOne({ "sessionToken": token })
         .then(result => {

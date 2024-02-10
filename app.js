@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
 
 const port = 8000
 app.set('views', path.join(__dirname, 'app/views'));
+app.use(express.static(path.join(__dirname, 'dist')));
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -20,10 +21,10 @@ app.use('/public', express.static('public'));
 
 /***************Mongodb configuratrion********************/
 mongoose.connect('mongodb+srv://JLPT-EXAM:Fl4xkzwe7FhJ5fMY@cluster0.bi0xw4z.mongodb.net/JLPT-EXAM', { 
-    useNewUrlParser: true, 
-    useFindAndModify: false, 
-    useUnifiedTopology: true, 
-    useCreateIndex: true 
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
 }).then(() => {
     console.log('MongoDB connected successfully');
 }).catch((error) => {

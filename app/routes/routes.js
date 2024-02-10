@@ -61,7 +61,7 @@ router.post("/admin/forgotPassword", admin.forgotPassword);
 router.post("/admin/checkResetPasswordToken", admin.checkResetPasswordToken);
 router.post("/admin/resetPassword", admin.resetPassword);
 router.post("/admin/changePassword", authentication.apiAuthentication, admin.changePassword);
-router.get("/admin/logout", authentication.apiAuthentication, admin.logout);
+router.get("/admin/logout", admin.logout);
 router.get("/admin/getAdminById/:userId", authentication.apiAuthentication, admin.getAdminById);
 router.post("/admin/updateProfile", authentication.apiAuthentication, admin.updateProfile);
 
@@ -79,7 +79,7 @@ router.post("/user/checkResetPasswordToken", user.checkResetPasswordToken);
 router.post("/user/resetPassword", user.resetPassword);
 router.post("/user/changePassword", authentication.apiAuthentication, user.changePassword);
 router.post("/user/updateProfile", authentication.apiAuthentication, user.updateProfile);
-router.get("/user/getAll", authentication.apiAuthentication, user.getAll);
+router.post("/user/getAll", user.getAll);
 router.get("/user/getAllCount", authentication.apiAuthentication, user.getAllCount);
 router.get("/user/topDebators", authentication.apiAuthentication, user.topDebators);
 router.post("/user/getByCategory", user.getByCategory);
@@ -91,8 +91,8 @@ router.post('/user/getAllBlocked', authentication.apiAuthentication, user.getAll
 router.post('/user/unblock', authentication.apiAuthentication, user.unblock);
 router.get("/user/showNotification/:userId", authentication.apiAuthentication, user.showNotification);
 router.get("/user/hideNotification/:userId", authentication.apiAuthentication, user.hideNotification);
-router.get("/user/deactivate/:userId", authentication.apiAuthentication, user.deactivate);
-router.get("/user/activate/:userId", authentication.apiAuthentication, user.activate);
+router.get("/user/deactivate/:userId", user.deactivate);
+router.get("/user/activate/:userId",  user.activate);
 router.post("/user/deletedUser", user.deletedUser);
 router.post("/user/logout", authentication.apiAuthentication, user.logout);
 
